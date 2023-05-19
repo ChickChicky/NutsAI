@@ -12,16 +12,20 @@ class ReLuNode : public INode {
     ReLuNode();
     virtual ~ReLuNode();
 
-    virtual vector<INode*>& getChildren();
-    virtual vector<float>& getInputVector();
-    virtual string getNodeType();
-    virtual float getOutput();
+    virtual vector<INode*>& GetChildren();
+    virtual vector<float>& GetInputVector();
+    virtual string GetNodeType();
+    virtual float GetOutput();
 
-    virtual INode* clone();
+    virtual INode* Clone();
+
+    virtual const char* Deconstruct();
+
+    static INode* Reconstruct(string);
 
 };
 
-string ReLuNode::getNodeType() { return "ReLuNode"; }
+string ReLuNode::GetNodeType() { return "ReLuNode"; }
 
 ReLuNode::ReLuNode() {
     this->children = vector<INode*>();
@@ -29,15 +33,15 @@ ReLuNode::ReLuNode() {
 
 ReLuNode::~ReLuNode(){}
 
-vector<INode*>& ReLuNode::getChildren() {
+vector<INode*>& ReLuNode::GetChildren() {
     return this->children;
 }
 
-vector<float>& ReLuNode::getInputVector() {
+vector<float>& ReLuNode::GetInputVector() {
     return this->input;
 }
 
-float ReLuNode::getOutput() {
+float ReLuNode::GetOutput() {
     float sum = 0;
     for (float val : this->input)  {
         sum += val;
@@ -45,6 +49,15 @@ float ReLuNode::getOutput() {
     return sum>=0?sum:0;
 }
 
-INode* ReLuNode::clone() {
+INode* ReLuNode::Clone() {
     return new ReLuNode();
 }
+
+const char* ReLuNode::Deconstruct() {
+    return "";
+}
+
+INode* ReLuNode::Reconstruct(string) {
+    return new ReLuNode();
+}
+

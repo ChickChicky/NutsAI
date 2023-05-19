@@ -14,16 +14,20 @@ class InputNode : public INode {
     InputNode();
     virtual ~InputNode();
 
-    virtual vector<INode*>& getChildren();
-    virtual vector<float>& getInputVector();
-    virtual string getNodeType();
-    virtual float getOutput();
+    virtual vector<INode*>& GetChildren();
+    virtual vector<float>& GetInputVector();
+    virtual string GetNodeType();
+    virtual float GetOutput();
 
-    virtual INode* clone();
+    virtual INode* Clone();
+
+    virtual const char* Deconstruct();
+
+    static INode* Reconstruct(string);
 
 };
 
-string InputNode::getNodeType() { return "InputNode"; }
+string InputNode::GetNodeType() { return "InputNode"; }
 
 InputNode::InputNode() {
     this->children = vector<INode*>();
@@ -32,18 +36,27 @@ InputNode::InputNode() {
 
 InputNode::~InputNode(){}
 
-vector<INode*>& InputNode::getChildren() {
+vector<INode*>& InputNode::GetChildren() {
     return this->children;
 }
 
-vector<float>& InputNode::getInputVector() {
+vector<float>& InputNode::GetInputVector() {
     return this->input;
 }
 
-float InputNode::getOutput() {
+float InputNode::GetOutput() {
     return this->value;
 }
 
-INode* InputNode::clone() {
+INode* InputNode::Clone() {
     return new InputNode();
 }
+
+const char* InputNode::Deconstruct() {
+    return "";
+}
+
+INode* InputNode::Reconstruct(string) {
+    return new InputNode();
+}
+

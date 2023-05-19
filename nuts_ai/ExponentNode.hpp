@@ -12,16 +12,20 @@ class ExponentNode : public INode {
     ExponentNode();
     virtual ~ExponentNode();
 
-    virtual vector<INode*>& getChildren();
-    virtual vector<float>& getInputVector();
-    virtual string getNodeType();
-    virtual float getOutput();
+    virtual vector<INode*>& GetChildren();
+    virtual vector<float>& GetInputVector();
+    virtual string GetNodeType();
+    virtual float GetOutput();
 
-    virtual INode* clone();
+    virtual INode* Clone();
+
+    virtual const char* Deconstruct();
+
+    static INode* Reconstruct(string);
 
 };
 
-string ExponentNode::getNodeType() { return "ExponentNode"; }
+string ExponentNode::GetNodeType() { return "ExponentNode"; }
 
 ExponentNode::ExponentNode() {
     this->children = vector<INode*>();
@@ -29,15 +33,15 @@ ExponentNode::ExponentNode() {
 
 ExponentNode::~ExponentNode(){}
 
-vector<INode*>& ExponentNode::getChildren() {
+vector<INode*>& ExponentNode::GetChildren() {
     return this->children;
 }
 
-vector<float>& ExponentNode::getInputVector() {
+vector<float>& ExponentNode::GetInputVector() {
     return this->input;
 }
 
-float ExponentNode::getOutput() {
+float ExponentNode::GetOutput() {
     float x = 0;
     for (float val : this->input)  {
         if (x == 0) {
@@ -49,6 +53,15 @@ float ExponentNode::getOutput() {
     return x;
 }
 
-INode* ExponentNode::clone() {
+INode* ExponentNode::Clone() {
     return new ExponentNode();
 }
+
+const char* ExponentNode::Deconstruct() {
+    return "";
+}
+
+INode* ExponentNode::Reconstruct(string) {
+    return new ExponentNode();
+}
+

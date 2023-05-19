@@ -12,16 +12,20 @@ class SignNode : public INode {
     SignNode();
     virtual ~SignNode();
 
-    virtual vector<INode*>& getChildren();
-    virtual vector<float>& getInputVector();
-    virtual string getNodeType();
-    virtual float getOutput();
+    virtual vector<INode*>& GetChildren();
+    virtual vector<float>& GetInputVector();
+    virtual string GetNodeType();
+    virtual float GetOutput();
 
-    virtual INode* clone();
+    virtual INode* Clone();
+
+    virtual const char* Deconstruct();
+
+    static INode* Reconstruct(string);
 
 };
 
-string SignNode::getNodeType() { return "SignNode"; }
+string SignNode::GetNodeType() { return "SignNode"; }
 
 SignNode::SignNode() {
     this->children = vector<INode*>();
@@ -29,15 +33,15 @@ SignNode::SignNode() {
 
 SignNode::~SignNode(){}
 
-vector<INode*>& SignNode::getChildren() {
+vector<INode*>& SignNode::GetChildren() {
     return this->children;
 }
 
-vector<float>& SignNode::getInputVector() {
+vector<float>& SignNode::GetInputVector() {
     return this->input;
 }
 
-float SignNode::getOutput() {
+float SignNode::GetOutput() {
     float sum = 0;
     for (float val : this->input)  {
         sum += val;
@@ -45,6 +49,15 @@ float SignNode::getOutput() {
     return sum<0?-1:sum>0?1:0;
 }
 
-INode* SignNode::clone() {
+INode* SignNode::Clone() {
     return new SignNode();
 }
+
+const char* SignNode::Deconstruct() {
+    return "";
+}
+
+INode* SignNode::Reconstruct(string) {
+    return new SignNode();
+}
+

@@ -12,16 +12,20 @@ class SigmoidNode : public INode {
     SigmoidNode();
     virtual ~SigmoidNode();
 
-    virtual vector<INode*>& getChildren();
-    virtual vector<float>& getInputVector();
-    virtual string getNodeType();
-    virtual float getOutput();
+    virtual vector<INode*>& GetChildren();
+    virtual vector<float>& GetInputVector();
+    virtual string GetNodeType();
+    virtual float GetOutput();
 
-    virtual INode* clone();
+    virtual INode* Clone();
+
+    virtual const char* Deconstruct();
+
+    static INode* Reconstruct(string);
 
 };
 
-string SigmoidNode::getNodeType() { return "SigmoidNode"; }
+string SigmoidNode::GetNodeType() { return "SigmoidNode"; }
 
 SigmoidNode::SigmoidNode() {
     this->children = vector<INode*>();
@@ -29,15 +33,15 @@ SigmoidNode::SigmoidNode() {
 
 SigmoidNode::~SigmoidNode(){}
 
-vector<INode*>& SigmoidNode::getChildren() {
+vector<INode*>& SigmoidNode::GetChildren() {
     return this->children;
 }
 
-vector<float>& SigmoidNode::getInputVector() {
+vector<float>& SigmoidNode::GetInputVector() {
     return this->input;
 }
 
-float SigmoidNode::getOutput() {
+float SigmoidNode::GetOutput() {
     float x = 0;
     for (float val : this->input)  {
         x += val;
@@ -45,6 +49,15 @@ float SigmoidNode::getOutput() {
     return 1/(1+exp(-x));
 }
 
-INode* SigmoidNode::clone() {
+INode* SigmoidNode::Clone() {
     return new SigmoidNode();
 }
+
+const char* SigmoidNode::Deconstruct() {
+    return "";
+}
+
+INode* SigmoidNode::Reconstruct(string) {
+    return new SigmoidNode();
+}
+

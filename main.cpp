@@ -6,8 +6,11 @@
 #include <thread>
 #include <chrono>
 #include <signal.h>
+#include <fstream>
 
 #include "nuts_ai/nuts_ai.hpp"
+
+using namespace nuts_ai;
 
 using namespace std;
 using namespace chrono;
@@ -30,7 +33,7 @@ float basic_fitness(NeuralNetwork network, vector<float> out, vector<float> expe
     float bad;
     if (bestScore == 0.f) // I have to modify this so that it stores whether the AI reached 0, because the score will be affected by the code after the 'if' statement
     for (INode* n : network.nodes) {
-        if (n->getChildren().size() == 0) bad += log(loop);
+        if (n->GetChildren().size() == 0) bad += log(loop);
     }
     return err + bad;
 }
@@ -59,54 +62,6 @@ map<int,float> getScores(vector<NeuralNetwork> networks, vector<BaseTestCase> te
     }
 
     return scores;
-}
-
-NeuralNetwork getBestNetwork(vector<NeuralNetwork> networks, map<int,float> scores) {
-    float bestScore = numeric_limits<float>::infinity();
-    int   bestIndex = -1;
-    for (int i = 0; i < networks.size(); i++) {
-        float score = scores[i];
-        if (score <= bestScore) {
-            bestIndex = i;
-            bestScore = score;
-        }
-    }
-    return networks[bestIndex];
-}
-
-float getBestScoreIndex(vector<NeuralNetwork> networks, map<int,float> scores) {
-    float bestScore = numeric_limits<float>::infinity();
-    int   bestIndex = -1;
-    for (int i = 0; i < networks.size(); i++) {
-        float score = scores[i];
-        if (score < bestScore) {
-            bestIndex = i;
-            bestScore = score;
-        }
-    }
-    return bestIndex;
-}
-
-/*
-Creates a new list of networks with mutations from the provided original networks
-! Consumes the provided networks
-*/
-vector<NeuralNetwork> createNewBatch(vector<NeuralNetwork> networks, NeuralNetwork bestNetwork) {
-    vector<NeuralNetwork> newNetworks;
-
-    for (int i = 0; i < 10; i++) {
-        NeuralNetwork net = bestNetwork.clone();
-        for (int m = 0; m < floor(sqrt(loop+1))+100; m++) net.introduceMutation();
-        newNetworks.push_back(net);
-    }
-
-    newNetworks[0] = bestNetwork.clone(); // At least keeps the best network from the previous batch to prevent regression
-
-    for (NeuralNetwork& net : networks) {
-        net.free();
-    }
-
-    return newNetworks;
 }
 
 float randf() {
@@ -166,9 +121,9 @@ int main() {
         //printf("Calculating score...\n");
         map<int,float> scores = getScores(networks,tests);
         //printf("Finding best network...\n");
-        NeuralNetwork bestNetwork = getBestNetwork(networks,scores);
+        NeuralNetwork bestNetwork = GetBestNetwork(networks,scores);
 
-        int bestIndex = getBestScoreIndex(networks,scores);
+        int bestIndex = GetBestScoreIndex(networks,scores);
         //
 
         bestScore = scores[bestIndex];
@@ -177,27 +132,29 @@ int main() {
             printf("[%d] => %d %f\n",loop,bestIndex,scores[bestIndex]);
             printf("Hidden layer:\n");
             for (INode* n : bestNetwork.nodes) {
-                printf("  %s (%p)\n",n->getNodeType().c_str(),n);
-                for (INode* nn : n->getChildren()) {
-                    printf("  -> %p (%s)\n",nn,nn->getNodeType().c_str());
+                printf("  %s (%p)\n",n->GetNodeType().c_str(),n);
+                for (INode* nn : n->GetChildren()) {
+                    printf("  -> %p (%s)\n",nn,nn->GetNodeType().c_str());
                 }
             }
             printf("Input layer:\n");
             for (INode* n : bestNetwork.inputLayer) {
-                printf("  %s\n",n->getNodeType().c_str());
-                for (INode* nn : n->getChildren()) {
-                    printf("  -> %p (%s)\n",nn,nn->getNodeType().c_str());
+                printf("  %s\n",n->GetNodeType().c_str());
+                for (INode* nn : n->GetChildren()) {
+                    printf("  -> %p (%s)\n",nn,nn->GetNodeType().c_str());
                 }
             }
             printf("Output layer:\n");
             for (INode* n : bestNetwork.outputLayer) {
-                printf("  %s\n",n->getNodeType().c_str());
-                for (INode* nn : n->getChildren()) {
-                    printf("  -> %p (%s)\n",nn,nn->getNodeType().c_str());
+                printf("  %s\n",n->GetNodeType().c_str());
+                for (INode* nn : n->GetChildren()) {
+                    printf("  -> %p (%s)\n",nn,nn->GetNodeType().c_str());
                 }
             }
             printf("\n");
         }
+
+        if (bestScore == 0) running = false;
 
         if (!running) {
             printf("\nCurrent results:\n");
@@ -213,10 +170,14 @@ int main() {
                 }
                 printf("(%f)\n",basic_fitness(bestNetwork,out,test.expectedOutput));
             }
+            FILE* file = fopen("bestNetwork.na-net","wb");
+            string ser = bestNetwork.serialize();
+            fwrite( ser.data(), 1, ser.size(), file );
+            fclose(file);
             break;
         }
         
-        networks = createNewBatch(networks,bestNetwork);
+        networks = createNewBatch(networks,bestNetwork,floor(sqrt(loop*100))+100);
 
         loop++;
 

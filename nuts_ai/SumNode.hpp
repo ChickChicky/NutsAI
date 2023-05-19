@@ -12,16 +12,20 @@ class SumNode : public INode {
     SumNode();
     virtual ~SumNode();
 
-    virtual vector<INode*>& getChildren();
-    virtual vector<float>& getInputVector();
-    virtual string getNodeType();
-    virtual float getOutput();
+    virtual vector<INode*>& GetChildren();
+    virtual vector<float>& GetInputVector();
+    virtual string GetNodeType();
+    virtual float GetOutput();
 
-    virtual INode* clone();
+    virtual INode* Clone();
+
+    virtual const char* Deconstruct();
+
+    static INode* Reconstruct(string);
 
 };
 
-string SumNode::getNodeType() { return "SumNode"; }
+string SumNode::GetNodeType() { return "SumNode"; }
 
 SumNode::SumNode() {
     this->children = vector<INode*>();
@@ -29,15 +33,15 @@ SumNode::SumNode() {
 
 SumNode::~SumNode(){}
 
-vector<INode*>& SumNode::getChildren() {
+vector<INode*>& SumNode::GetChildren() {
     return this->children;
 }
 
-vector<float>& SumNode::getInputVector() {
+vector<float>& SumNode::GetInputVector() {
     return this->input;
 }
 
-float SumNode::getOutput() {
+float SumNode::GetOutput() {
     float sum = 0;
     for (float val : this->input)  {
         sum += val;
@@ -45,6 +49,15 @@ float SumNode::getOutput() {
     return sum;
 }
 
-INode* SumNode::clone() {
+INode* SumNode::Clone() {
     return new SumNode();
 }
+
+const char* SumNode::Deconstruct() {
+    return "";
+}
+
+INode* SumNode::Reconstruct(string) {
+    return new SumNode();
+}
+

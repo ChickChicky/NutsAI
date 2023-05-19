@@ -12,16 +12,20 @@ class SubstractNode : public INode {
     SubstractNode();
     virtual ~SubstractNode();
 
-    virtual vector<INode*>& getChildren();
-    virtual vector<float>& getInputVector();
-    virtual string getNodeType();
-    virtual float getOutput();
+    virtual vector<INode*>& GetChildren();
+    virtual vector<float>& GetInputVector();
+    virtual string GetNodeType();
+    virtual float GetOutput();
 
-    virtual INode* clone();
+    virtual INode* Clone();
+
+    virtual const char* Deconstruct();
+
+    static INode* Reconstruct(string);
 
 };
 
-string SubstractNode::getNodeType() { return "SubstractNode"; }
+string SubstractNode::GetNodeType() { return "SubstractNode"; }
 
 SubstractNode::SubstractNode() {
     this->children = vector<INode*>();
@@ -29,15 +33,15 @@ SubstractNode::SubstractNode() {
 
 SubstractNode::~SubstractNode(){}
 
-vector<INode*>& SubstractNode::getChildren() {
+vector<INode*>& SubstractNode::GetChildren() {
     return this->children;
 }
 
-vector<float>& SubstractNode::getInputVector() {
+vector<float>& SubstractNode::GetInputVector() {
     return this->input;
 }
 
-float SubstractNode::getOutput() {
+float SubstractNode::GetOutput() {
     float sum = 0;
     for (float val : this->input)  {
         sum -= val;
@@ -45,6 +49,15 @@ float SubstractNode::getOutput() {
     return sum;
 }
 
-INode* SubstractNode::clone() {
+INode* SubstractNode::Clone() {
     return new SubstractNode();
 }
+
+const char* SubstractNode::Deconstruct() {
+    return "";
+}
+
+INode* SubstractNode::Reconstruct(string) {
+    return new SubstractNode();
+}
+
